@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <style>
+       .calculator {
+            width: 200px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        button {
+            width: 40px;
+            height: 30px;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="result" readonly>
+        <br>
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="appendOperator('+')">+</button>
+        <br>
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="appendOperator('-')">-</button>
+        <br>
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="appendOperator('*')">*</button>
+        <br>
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal()">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="appendOperator('/')">/</button>
+        <br>
+        <button onclick="clearResult()">Clear</button>
+    </div>
+
+    <script>
+        let result = document.getElementById('result');
+
+        function appendNumber(number) {
+            result.value += number;
+        }
+
+        function appendOperator(operator) {
+            result.value += operator;
+        }
+
+        function appendDecimal() {
+            result.value += '.';
+        }
+
+        function clearResult() {
+            result.value = '';
+        }
+
+        function calculate() {
+            result.value = eval(result.value);
+        }
+    </script>
+</body>
+</html>
