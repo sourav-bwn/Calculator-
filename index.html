@@ -53,14 +53,17 @@
         let result = document.getElementById('result');
 
         function appendNumber(number) {
+            if (result.value === 'Error') result.value = '';
             result.value += number;
         }
 
         function appendOperator(operator) {
+            if (result.value === 'Error') return;
             result.value += operator;
         }
 
         function appendDecimal() {
+            if (result.value === 'Error') result.value = '';
             result.value += '.';
         }
 
@@ -68,8 +71,62 @@
             result.value = '';
         }
 
+        // Accept only calculator numbers and operators, never JavaScript code.
+        function evaluateExpression(input) {
+            let position = 0;
+
+            function number() {
+                const match = /^(?:\d+(?:\.\d*)?|\.\d+)/.exec(input.slice(position));
+                if (!match) throw new Error('Expected a number');
+                position += match[0].length;
+                return Number(match[0]);
+            }
+
+            function factor() {
+                if (input[position] === '-') {
+                    position++;
+                    return -factor();
+                }
+                if (input[position] === '+') {
+                    position++;
+                    return factor();
+                }
+                return number();
+            }
+
+            function term() {
+                let value = factor();
+                while (input[position] === '*' || input[position] === '/') {
+                    const operator = input[position++];
+                    const right = factor();
+                    value = operator === '*' ? value * right : value / right;
+                }
+                return value;
+            }
+
+            function expression() {
+                let value = term();
+                while (input[position] === '+' || input[position] === '-') {
+                    const operator = input[position++];
+                    const right = term();
+                    value = operator === '+' ? value + right : value - right;
+                }
+                return value;
+            }
+
+            const value = expression();
+            if (position !== input.length || !Number.isFinite(value)) {
+                throw new Error('Invalid expression');
+            }
+            return value;
+        }
+
         function calculate() {
-            result.value = eval(result.value);
+            try {
+                result.value = String(evaluateExpression(result.value));
+            } catch (error) {
+                result.value = 'Error';
+            }
         }
     </script>
 </body>
