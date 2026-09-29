@@ -65,7 +65,10 @@
 
         function appendDecimal() {
             if (result.value === 'Error') result.value = '';
-            result.value += '.';
+            // Only one decimal point is valid in each number, not one per expression.
+            const currentNumber = result.value.split(/[+*/-]/).pop();
+            if (currentNumber.includes('.')) return;
+            result.value += currentNumber ? '.' : '0.';
         }
 
         function clearResult() {
