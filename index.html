@@ -80,7 +80,7 @@
             let position = 0;
 
             function number() {
-                const match = /^(?:\d+(?:\.\d*)?|\.\d+)/.exec(input.slice(position));
+                const match = /^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/.exec(input.slice(position));
                 if (!match) throw new Error('Expected a number');
                 position += match[0].length;
                 return Number(match[0]);
