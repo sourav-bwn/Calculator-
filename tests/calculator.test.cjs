@@ -43,3 +43,23 @@ test('malformed numbers, non-finite results, and code remain rejected', () => {
         assert.throws(() => context.evaluateExpression(input), input);
     }
 });
+
+test('decimal button cannot corrupt a displayed exponent', () => {
+    for (const value of ['1e-7', '1e+21', '1.5e-7', '-1e-7']) {
+        const {display, context} = calculator();
+        display.value = value;
+        context.appendDecimal();
+        assert.equal(display.value, value);
+        context.calculate();
+        assert.notEqual(display.value, 'Error');
+    }
+});
+
+test('decimal button still handles new operands and ordinary decimals', () => {
+    for (const [input, expected] of [['', '0.'], ['2+', '2+0.'], ['1e-7+', '1e-7+0.'], ['2', '2.'], ['2.5', '2.5'], ['Error', '0.']]) {
+        const {display, context} = calculator();
+        display.value = input;
+        context.appendDecimal();
+        assert.equal(display.value, expected);
+    }
+});
