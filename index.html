@@ -66,8 +66,10 @@
         function appendDecimal() {
             if (result.value === 'Error') result.value = '';
             // Only one decimal point is valid in each number, not one per expression.
-            const currentNumber = result.value.split(/[+*/-]/).pop();
-            if (currentNumber.includes('.')) return;
+            const match = /(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.exec(result.value);
+            const currentNumber = match ? match[0] : '';
+            // A displayed exponent is a complete result, not an editable decimal.
+            if (/[.eE]/.test(currentNumber)) return;
             result.value += currentNumber ? '.' : '0.';
         }
 
