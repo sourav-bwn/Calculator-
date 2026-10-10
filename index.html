@@ -60,7 +60,10 @@
 
         function appendOperator(operator) {
             if (result.value === 'Error') return;
-            result.value += operator;
+            // Replace an unfinished binary operator, but retain unary minus for negatives.
+            if (operator !== '-' && /[+*/]$/.test(result.value)) {
+                result.value = result.value.slice(0, -1) + operator;
+            } else result.value += operator;
         }
 
         function appendDecimal() {
