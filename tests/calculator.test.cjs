@@ -63,3 +63,11 @@ test('decimal button still handles new operands and ordinary decimals', () => {
         assert.equal(display.value, expected);
     }
 });
+
+test('equals on an empty display leaves it ready for input',()=>{
+    const x=calculator();x.context.calculate();assert.equal(x.display.value,'');
+    x.context.appendNumber('2');x.context.calculate();assert.equal(x.display.value,'2');
+});
+test('invalid nonempty expressions still show Error',()=>{
+    const x=calculator();x.display.value='2/0';x.context.calculate();assert.equal(x.display.value,'Error');
+});
