@@ -71,3 +71,13 @@ test('equals on an empty display leaves it ready for input',()=>{
 test('invalid nonempty expressions still show Error',()=>{
     const x=calculator();x.display.value='2/0';x.context.calculate();assert.equal(x.display.value,'Error');
 });
+test('new binary operator replaces an unfinished binary operator',()=>{
+    for(const [input,op,expected] of [['2+','*','2*'],['2*','/','2/'],['2/','+','2+'],['2+','+','2+']]){
+        const x=calculator();x.display.value=input;x.context.appendOperator(op);assert.equal(x.display.value,expected);
+        x.context.appendNumber('3');x.context.calculate();assert.notEqual(x.display.value,'Error');
+    }
+});
+test('unary minus after multiplication and signed exponents are preserved',()=>{
+    const x=calculator();x.display.value='2*';x.context.appendOperator('-');x.context.appendNumber('3');x.context.calculate();assert.equal(x.display.value,'-6');
+    x.display.value='1e+21';x.context.appendOperator('/');assert.equal(x.display.value,'1e+21/');
+});
