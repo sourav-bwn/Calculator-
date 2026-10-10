@@ -80,6 +80,19 @@
             result.value = '';
         }
 
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey || event.metaKey || event.altKey) return;
+            if (/^[0-9]$/.test(event.key)) appendNumber(event.key);
+            else if (/^[+*/-]$/.test(event.key)) appendOperator(event.key);
+            else if (event.key === '.') appendDecimal();
+            else if (event.key === 'Enter' || event.key === '=') calculate();
+            else if (event.key === 'Escape') clearResult();
+            else if (event.key === 'Backspace') {
+                result.value = result.value === 'Error' ? '' : result.value.slice(0, -1);
+            } else return;
+            event.preventDefault();
+        });
+
         // Accept only calculator numbers and operators, never JavaScript code.
         function evaluateExpression(input) {
             let position = 0;
