@@ -7,10 +7,10 @@ const vm = require('node:vm');
 const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 function calculator() {
-    const display = {value: ''};
-    const context = vm.createContext({document: {getElementById: () => display}});
+    const display = {value: ''}, listeners = {};
+    const context = vm.createContext({document: {getElementById: () => display, addEventListener: (type, fn) => listeners[type] = fn}});
     vm.runInContext(script, context);
-    return {display, context};
+    return {display, context, listeners};
 }
 
 test('small results in scientific notation can be reused', () => {
@@ -80,4 +80,16 @@ test('new binary operator replaces an unfinished binary operator',()=>{
 test('unary minus after multiplication and signed exponents are preserved',()=>{
     const x=calculator();x.display.value='2*';x.context.appendOperator('-');x.context.appendNumber('3');x.context.calculate();assert.equal(x.display.value,'-6');
     x.display.value='1e+21';x.context.appendOperator('/');assert.equal(x.display.value,'1e+21/');
+});
+function key(x,value,flags={}){let prevented=false;x.listeners.keydown({key:value,preventDefault(){prevented=true},...flags});return prevented;}
+test('keyboard arithmetic uses existing input and calculate paths',()=>{
+    const x=calculator();for(const value of ['2','+','3','*','4','Enter'])assert.equal(key(x,value),true);
+    assert.equal(x.display.value,'14');key(x,'Escape');assert.equal(x.display.value,'');
+    for(const value of ['.','5','+','1','='])key(x,value);assert.equal(x.display.value,'1.5');
+});
+test('Backspace edits input and clears errors without swallowing unrelated keys or shortcuts',()=>{
+    const x=calculator();x.display.value='123';key(x,'Backspace');assert.equal(x.display.value,'12');
+    x.display.value='Error';key(x,'Backspace');assert.equal(x.display.value,'');
+    assert.equal(key(x,'Tab'),false);for(const flags of [{ctrlKey:true},{metaKey:true},{altKey:true}])assert.equal(key(x,'1',flags),false);
+    assert.equal(x.display.value,'');
 });
